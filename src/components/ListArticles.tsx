@@ -17,8 +17,6 @@ const Hightlight = (props: any) => {
   const regexp = new RegExp(filter, 'ig');
   const matchValue = str.match(regexp);
   if (matchValue) {
-    console.log('matchValue', matchValue);
-    console.log('str.split(regexp)', str.split(regexp));
     return str.split(regexp).map((s: string, index: number, array: Array<any>) => {
       if (index < array.length - 1) {
         const c = matchValue.shift();
@@ -81,8 +79,11 @@ const ListArticles: React.FC = () => {
                   <CalendarMonthOutlinedIcon />
                   <p>{moment(article.publishedAt).format('MMMM Do, YYYY')}</p>
                 </div>
-                <p className={s.articleTitle}>{article.title}</p>
-                {countOfCharacter(article.summary, 100)}
+
+                <p className={s.articleTitle}>
+                  <Hightlight filter={searchInputValue} str={article.title} />
+                </p>
+                <Hightlight filter={searchInputValue} str={countOfCharacter(article.summary, 100)} />
               </div>
               <br />
             </div>
