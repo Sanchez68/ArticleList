@@ -1,21 +1,20 @@
 .App {
-  text-align: center;
-
-}
-*{
-  margin: 0;
-  padding: 0;
+    text-align: center;
 }
 
-.MuiGrid-root{
-  padding-left: 0px;
+* {
+    margin: 0;
+    padding: 0;
+}
 
+.MuiGrid-root {
+    padding-left: 0;
 }
-.MuiPaper-elevation{
-  height: 100%;
+
+.MuiPaper-elevation {
+    height: 100%;
 }
-.MuiCardActions-root {
-  display: flex;
-  align-self: flex-end;
-  margin: 0 20px;
+
+.hightlight {
+    background: yellow;
 }

@@ -7,22 +7,46 @@ import s from './ListArticles.module.scss';
 import SearchIcon from '@mui/icons-material/Search';
 import { useNavigate } from 'react-router-dom';
 import { ArrowForward } from '@material-ui/icons';
+import CalendarMonthOutlinedIcon from '@mui/icons-material/CalendarMonthOutlined';
+
 import moment from 'moment';
+
+const Hightlight = (props: any) => {
+  const { filter, str } = props;
+  if (!filter) return str;
+  const regexp = new RegExp(filter, 'ig');
+  const matchValue = str.match(regexp);
+  if (matchValue) {
+    console.log('matchValue', matchValue);
+    console.log('str.split(regexp)', str.split(regexp));
+    return str.split(regexp).map((s: string, index: number, array: Array<any>) => {
+      if (index < array.length - 1) {
+        const c = matchValue.shift();
+        return (
+          <>
+            {s}
+            <span className={'hightlight'}>{c}</span>
+          </>
+        );
+      }
+      return s;
+    });
+  }
+  return str;
+};
 
 const ListArticles: React.FC = () => {
   const navigate = useNavigate();
 
   const { articles } = useTypeSelector(state => state.articles);
   const dispatch = useDispatch();
-  console.log(articles);
   const [searchInputValue, setSearchInputValue] = useState('');
-  console.log(searchInputValue);
   useEffect(() => {
     dispatch(requestArticles(searchInputValue));
   }, [searchInputValue]);
 
-  const countOfCharacter = (string: string) => {
-    return string.length > 140 ? string.slice(0, 140) + ' ...' : string;
+  const countOfCharacter = (string: string, count: number) => {
+    return string.length > count ? string.slice(0, count) + '...' : string;
   };
 
   return (
@@ -30,7 +54,7 @@ const ListArticles: React.FC = () => {
       <div className={s.inputSearchWrapper}>
         <div>
           <p className={s.filterLabel}>Filter by keywords</p>
-          <Paper component="form" sx={{ p: '2px 4px', display: 'flex', alignItems: 'center', width: 400 }}>
+          <Paper className={s.paperMui} component="form" sx={{ display: 'flex', alignItems: 'center', width: 600 }}>
             <IconButton type="submit" sx={{ p: '10px' }} aria-label="search">
               <SearchIcon />
             </IconButton>
@@ -52,18 +76,20 @@ const ListArticles: React.FC = () => {
           <div className={s.cardWrapper} key={article.id}>
             <div className={s.cardContenWrappert}>
               <img src={article.imageUrl} alt="image" />
-              <div></div>
               <div className={s.cardContent}>
-                {moment(article.publishedAt).format('MMMM Do, YYYY')} <br />
-                <h2>{article.title}</h2>
-                {countOfCharacter(article.summary)}
+                <div className={s.publishedAt}>
+                  <CalendarMonthOutlinedIcon />
+                  <p>{moment(article.publishedAt).format('MMMM Do, YYYY')}</p>
+                </div>
+                <p className={s.articleTitle}>{article.title}</p>
+                {countOfCharacter(article.summary, 100)}
               </div>
               <br />
             </div>
             <Button
               className={s.forwardButton}
               onClick={() => {
-                navigate(`/article/${article.id}`);
+                navigate(`/ArticleList/article/${article.id}`);
               }}
               endIcon={<ArrowForward />}
             >
@@ -72,36 +98,6 @@ const ListArticles: React.FC = () => {
           </div>
         ))}
       </div>
-      {/*<div className={s.listWrapper}>*/}
-      {/*  {articles.map(article => (*/}
-      {/*    <Link className={s.cardWrapper} key={article.id} to={`article/${article.id}`}>*/}
-      {/*      <Card className={s.cardWidth}>*/}
-      {/*        <CardActionArea>*/}
-      {/*          <CardMedia*/}
-      {/*            component="img"*/}
-      {/*            height="140"*/}
-      {/*            image={article.imageUrl}*/}
-      {/*            alt="something wrong, img not connected"*/}
-      {/*          />*/}
-      {/*          <CardContent>*/}
-      {/*            <Typography gutterBottom variant="h5" component="div">*/}
-      {/*              {article.title}*/}
-      {/*            </Typography>*/}
-      {/*            <Typography variant="body2" color="text.secondary">*/}
-      {/*              {article.publishedAt} <br />*/}
-      {/*              {article.summary}*/}
-      {/*            </Typography>*/}
-      {/*          </CardContent>*/}
-      {/*        </CardActionArea>*/}
-      {/*        <CardActions>*/}
-      {/*          <Button className={s.readMoreWrapper} size="small" color="primary">*/}
-      {/*            Read more*/}
-      {/*          </Button>*/}
-      {/*        </CardActions>*/}
-      {/*      </Card>*/}
-      {/*    </Link>*/}
-      {/*  ))}*/}
-      {/*</div>*/}
     </div>
   );
 };
